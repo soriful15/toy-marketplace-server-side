@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 5000;
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // middleware
 require('dotenv').config()
 app.use(cors());
@@ -30,18 +30,36 @@ async function run() {
 
 
 
-    const bookingCollection = client.db('toyMarket').collection('toyCollection')
+    const toyCollection = client.db('toyMarket').collection('toyCollection')
 
 
- // app get 
- app.get('/allCollection',async(req,res)=>{
-    const cursor=bookingCollection.find()
-    const result=await cursor.toArray()
-    res.send(result)
- })
+    // app get 
+    app.get('/allCollection', async (req, res) => {
+      const cursor = toyCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+    // app get dhara id
+    app.get('/allCollection/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const singleToy = await toyCollection.findOne(query)
+      res.send(singleToy)
+    })
 
 
+    // app post
 
+    app.post('/addToy', async (req, res) => {
+      const newToy = req.body
+      if (!newToy) {
+        return res.status(404).send({ message: 'body data not found' })
+      }
+      console.log(newToy)
+      const result = await toyCollection.insertOne(newToy)
+      res.send(result)
+
+    })
 
 
 
