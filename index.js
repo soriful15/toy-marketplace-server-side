@@ -49,7 +49,6 @@ async function run() {
 
 
     // app post
-
     app.post('/addToy', async (req, res) => {
       const newToy = req.body
       if (!newToy) {
@@ -62,7 +61,15 @@ async function run() {
     })
 
 
+    // app get email
+    app.get('/myToys/:seller_email', async (req, res) => {
+      console.log(req.params.seller_email)
+      const result = await toyCollection.find({ seller_email: req.params.seller_email }).toArray()
+      res.send(result)
 
+
+
+    })
 
 
 
