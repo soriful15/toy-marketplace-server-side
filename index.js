@@ -106,6 +106,22 @@ async function run() {
     })
 
 
+// search
+const indexKeys = { name: 1 }
+const indexOptions = { name: 'name' }
+const result = await toyCollection.createIndex(indexKeys, indexOptions);
+
+app.get('/toySearch/:text', async(req,res)=>{
+  const searchText = req.params.text
+  const result= await toyCollection.find({
+
+    $or:[
+      { name: { $regex: searchText, $options: 'i' } }
+    ]
+  }).toArray()
+
+  res.send(result)
+})
 
 
     // Send a ping to confirm a successful connection
