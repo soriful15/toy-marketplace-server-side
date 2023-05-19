@@ -35,7 +35,7 @@ async function run() {
 
     // app get 
     app.get('/allCollection', async (req, res) => {
-      const cursor = toyCollection.find()
+      const cursor = toyCollection.find().limit(20)
       const result = await cursor.toArray()
       res.send(result)
     })
@@ -51,6 +51,10 @@ async function run() {
     // app post
     app.post('/addToy', async (req, res) => {
       const newToy = req.body
+
+      // newToy.createdAt = new price()
+
+
       if (!newToy) {
         return res.status(404).send({ message: 'body data not found' })
       }
@@ -66,13 +70,10 @@ async function run() {
       console.log(req.params.seller_email)
       const result = await toyCollection.find({ seller_email: req.params.seller_email }).toArray()
       res.send(result)
-
-
-
     })
-    // get delete
 
-    app.delete('/allCollection/:id', async (req, res) => {
+    // get delete
+    app.delete('/delete/:id', async (req, res) => {
       const id = req.params.id
       console.log(id)
       const query = { _id: new ObjectId(id) }
@@ -84,44 +85,42 @@ async function run() {
 
 
     // app  put
-
     app.put('/allCollection/:id', async (req, res) => {
-
       const id = req.params.id
       console.log(id)
       const updatedToy = req.body
       console.log(updatedToy)
-      const filter={_id: new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const option = { upsert: true };
-      const updatedDoc={
-        $set:{
-          quantity:updatedToy.quantity,
+      const updatedDoc = {
+        $set: {
+          quantity: updatedToy.quantity,
           price: updatedToy.price,
-          details:updatedToy.details
+          details: updatedToy.details
         }
       }
-      const result=await toyCollection.updateOne(filter,updatedDoc,option)
+      const result = await toyCollection.updateOne(filter, updatedDoc, option)
       res.send(result)
 
     })
 
 
-// search
-const indexKeys = { name: 1 }
-const indexOptions = { name: 'name' }
-const result = await toyCollection.createIndex(indexKeys, indexOptions);
+    // search
+    const indexKeys = { name: 1 }
+    const indexOptions = { name: 'name' }
+    const result = await toyCollection.createIndex(indexKeys, indexOptions);
 
-app.get('/toySearch/:text', async(req,res)=>{
-  const searchText = req.params.text
-  const result= await toyCollection.find({
+    app.get('/toySearch/:text', async (req, res) => {
+      const searchText = req.params.text
+      const result = await toyCollection.find({
 
-    $or:[
-      { name: { $regex: searchText, $options: 'i' } }
-    ]
-  }).toArray()
+        $or: [
+          { name: { $regex: searchText, $options: 'i' } }
+        ]
+      }).toArray()
 
-  res.send(result)
-})
+      res.send(result)
+    })
 
 
     // Send a ping to confirm a successful connection
