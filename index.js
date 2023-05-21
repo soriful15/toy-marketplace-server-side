@@ -65,39 +65,26 @@ async function run() {
     })
 
 
-
-
-
-    // app get email
-
- 
-    app.get('/myToys/:email', async (req, res) => {
-      console.log(req.params.email)
-      const result = await toyCollection.find({ seller_email: req.params.email }).toArray()
-      res.send(result)
-    })
-
-
-
-    
-
-
-    app.get('/myToys', async (req, res) => {
-      let sortOrder;
-      console.log(req.query.sort)
-      if (req.query.sort === 'highest') {
-        sortOrder = -1;
+    app.get("/myToys", async (req, res) => {
+      let query = {};
+      if (req.query?.email) {
+        query = { seller_email: req.query.email };
       }
-      else if (req.body.sort === 'lowest') {
+
+      console.log(req.query.sort);
+      let sortOrder;
+      if (req.query?.sort === "highest") {
+        sortOrder = -1;
+      } else if (req.query?.sort === "lowest") {
         sortOrder = 1;
       }
-      const result = await toyCollection.find().sort({ price: sortOrder }).toArray()
-      res.send(result)
-    })
 
-
-
-
+      const result = await toyCollection
+        .find(query)
+        .sort({ price: sortOrder })
+        .toArray();
+      res.send(result);
+    });
 
     // get delete
     app.delete('/delete/:id', async (req, res) => {
