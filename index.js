@@ -79,10 +79,7 @@ async function run() {
         sortOrder = 1;
       }
 
-      const result = await toyCollection
-        .find(query)
-        .sort({ price: sortOrder })
-        .toArray();
+      const result = await toyCollection.find(query).sort({ price: sortOrder }).toArray();
       res.send(result);
     });
 
